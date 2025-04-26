@@ -32,7 +32,7 @@ client = gspread.authorize(creds)
 sheet = client.open(spreadsheet_name).worksheet(tab_name)
 
 try:
-    # Setup Remote WebDriver using ChromeOptions only (Selenium 4.6+ safe)
+    # Setup Remote WebDriver with increased timeouts
     chrome_options = Options()
     chrome_options.add_argument("--headless")
     chrome_options.add_argument("--no-sandbox")
@@ -45,20 +45,23 @@ try:
         command_executor=f"{remote_webdriver_url}/wd/hub",
         options=chrome_options
     )
-    driver.set_page_load_timeout(30)
+    driver.set_page_load_timeout(60)
+    driver.set_script_timeout(60)
+    driver.implicitly_wait(10)
 
-    # Login flow
+    # Open the login page
     driver.get("https://lcr.churchofjesuschrist.org/report/custom-reports-details/97fb64b2-aa70-4166-93e1-c6decd332745")
-    time.sleep(1)
+    time.sleep(2)
     print("Launched login page")
     driver.find_element(By.ID, "input28").send_keys(username)
     driver.find_element(By.XPATH, '//input[@value="Next"]').click()
-    time.sleep(1)
+    time.sleep(2)
     print("Entered username and clicked 'Next'")
     driver.find_element(By.ID, "input53").send_keys(password)
     driver.find_element(By.XPATH, '//input[@value="Verify"]').click()
-    time.sleep(1)
     print("Entered password and clicked 'Sign In'")
+
+    time.sleep(5)  # Give heavy dashboard time to load fully
 
     # Members with Callings report
     driver.get("https://lcr.churchofjesuschrist.org/orgs/members-with-callings?lang=eng")
@@ -108,9 +111,9 @@ try:
 
     # Primary report
     driver.get("https://lcr.churchofjesuschrist.org/orgs/643828?lang=eng")
-    time.sleep(2)
+    time.sleep(3)
     driver.find_element(By.XPATH, '//a[@ng-click="selectAllOrgs()" and text()="All Organizations"]').click()
-    time.sleep(2)
+    time.sleep(3)
 
     for member in all_member_data:
         if member["calling"] in ["Primary Teacher", "Primary Activities Leader"]:
@@ -132,9 +135,9 @@ try:
 
     # Sunday School report
     driver.get("https://lcr.churchofjesuschrist.org/orgs/498982?lang=eng")
-    time.sleep(2)
+    time.sleep(3)
     driver.find_element(By.XPATH, '//a[@ng-click="selectAllOrgs()" and text()="All Organizations"]').click()
-    time.sleep(2)
+    time.sleep(3)
 
     for member in all_member_data:
         if member["calling"] == "Sunday School Teacher":
