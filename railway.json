@@ -10,6 +10,6 @@
     }
   },
   "start": {
-    "cmd": "python Calling_Scraper.py"
+    "cmd": "python calling_scraper.py"
   }
 }
