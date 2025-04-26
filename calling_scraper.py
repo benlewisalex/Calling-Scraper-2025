@@ -29,15 +29,16 @@ client = gspread.authorize(creds)
 sheet = client.open(spreadsheet_name).worksheet(tab_name)
 
 try:
-    # Setup WebDriver (headless + Railway safe)
+    # Setup WebDriver (headless + Railway-safe)
     chrome_options = Options()
+    chrome_options.binary_location = "/usr/bin/chromium-browser"  # <-- New line
     chrome_options.add_argument("--headless")
     chrome_options.add_argument("--no-sandbox")
     chrome_options.add_argument("--disable-dev-shm-usage")
     chrome_options.add_argument("--disable-gpu")
     chrome_options.add_argument("--window-size=1920x1080")
     
-    webdriver_service = Service("/usr/bin/chromedriver")
+    webdriver_service = Service("/usr/bin/chromedriver")  # <-- Updated line
     driver = webdriver.Chrome(service=webdriver_service, options=chrome_options)
     driver.set_page_load_timeout(30)
 
