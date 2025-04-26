@@ -1,4 +1,3 @@
 selenium
-chromedriver-autoinstaller
 gspread
 oauth2client
