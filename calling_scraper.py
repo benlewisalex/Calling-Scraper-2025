@@ -4,30 +4,29 @@ from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
 import re
 import gspread
-from oauth2client.service_account import ServiceAccountCredentials
+from google.oauth2.service_account import Credentials
 import time
 from datetime import datetime
 import os
+import json
 
+# Load confidential information from environment variables
+spreadsheet_name = os.getenv('SPREADSHEET_NAME')
+username = os.getenv('LDS_USERNAME')
+password = os.getenv('LDS_PASSWORD')
+tab_name = os.getenv('TAB_NAME')
 
-# Load confidential information from Creds.txt
-script_dir = os.path.dirname(os.path.abspath(__file__))
-creds_path = os.path.join(script_dir, 'CallingsCreds.txt')
-with open(creds_path, 'r') as f:
-    creds_json_path = os.path.join(script_dir,f.readline().strip())
-    spreadsheet_name = f.readline().strip()
-    username = f.readline().strip()
-    password = f.readline().strip()
-    tab_name = f.readline().strip()
-
-# Set up Google Sheets API credentials
+# Load Google Sheets API credentials from environment variable
+google_creds_json = os.getenv('GOOGLE_CREDENTIALS_JSON')
+google_creds_dict = json.loads(google_creds_json)
 scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/spreadsheets",
          "https://www.googleapis.com/auth/drive.file", "https://www.googleapis.com/auth/drive"]
-creds = ServiceAccountCredentials.from_json_keyfile_name(creds_json_path, scope)
+creds = Credentials.from_service_account_info(google_creds_dict, scopes=scope)
 client = gspread.authorize(creds)
 
 # Open the Google Spreadsheet
 sheet = client.open(spreadsheet_name).worksheet(tab_name)
+
 
 try:
     # Setup WebDriver
