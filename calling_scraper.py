@@ -37,7 +37,7 @@ try:
     chrome_options.add_argument("--disable-gpu")
     chrome_options.add_argument("--window-size=1920x1080")
     
-    webdriver_service = Service(ChromeDriverManager().install())
+    webdriver_service = Service("/usr/bin/chromedriver")
     driver = webdriver.Chrome(service=webdriver_service, options=chrome_options)
     driver.set_page_load_timeout(30)
 
