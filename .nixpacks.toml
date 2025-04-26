@@ -3,9 +3,8 @@ nixPkgs = [
   "chromium",
   "chromedriver",
   "nss",
-  "fontconfig",
   "freetype",
-  "libxkbcommon",
+  "fontconfig",
   "xorg.libX11",
   "xorg.libXcomposite",
   "xorg.libXcursor",
@@ -15,5 +14,7 @@ nixPkgs = [
   "xorg.libXi",
   "xorg.libXrandr",
   "xorg.libXrender",
-  "xorg.libXtst"
+  "xorg.libXtst",
+  "alsa-lib",
+  "xorg.libxcb"
 ]
