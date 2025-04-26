@@ -1,7 +1,6 @@
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.options import Options
-from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 import re
 import gspread
 from google.oauth2.service_account import Credentials
@@ -15,12 +14,17 @@ spreadsheet_name = os.getenv('SPREADSHEET_NAME')
 username = os.getenv('LDS_USERNAME')
 password = os.getenv('LDS_PASSWORD')
 tab_name = os.getenv('TAB_NAME')
+remote_webdriver_url = os.getenv("REMOTE_SELENIUM_GRID_URL")
 
 # Load Google Sheets API credentials from environment variable
 google_creds_json = os.getenv('GOOGLE_CREDENTIALS_JSON')
 google_creds_dict = json.loads(google_creds_json)
-scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/spreadsheets",
-         "https://www.googleapis.com/auth/drive.file", "https://www.googleapis.com/auth/drive"]
+scope = [
+    "https://spreadsheets.google.com/feeds",
+    "https://www.googleapis.com/auth/spreadsheets",
+    "https://www.googleapis.com/auth/drive.file",
+    "https://www.googleapis.com/auth/drive"
+]
 creds = Credentials.from_service_account_info(google_creds_dict, scopes=scope)
 client = gspread.authorize(creds)
 
@@ -28,24 +32,22 @@ client = gspread.authorize(creds)
 sheet = client.open(spreadsheet_name).worksheet(tab_name)
 
 try:
-    # Setup Remote WebDriver (using a remote Selenium Grid)
-    remote_webdriver_url = os.getenv('REMOTE_SELENIUM_GRID_URL')  # Set this as an environment variable!
-
+    # Setup Remote WebDriver using ChromeOptions only (Selenium 4.6+ safe)
     chrome_options = Options()
     chrome_options.add_argument("--headless")
     chrome_options.add_argument("--no-sandbox")
     chrome_options.add_argument("--disable-dev-shm-usage")
     chrome_options.add_argument("--disable-gpu")
     chrome_options.add_argument("--window-size=1920x1080")
+    chrome_options.set_capability("browserName", "chrome")
 
     driver = webdriver.Remote(
-        command_executor=f'{remote_webdriver_url}/wd/hub',
-        desired_capabilities=DesiredCapabilities.CHROME.copy(),
+        command_executor=f"{remote_webdriver_url}/wd/hub",
         options=chrome_options
     )
     driver.set_page_load_timeout(30)
 
-    # Open the login page
+    # Login flow
     driver.get("https://lcr.churchofjesuschrist.org/report/custom-reports-details/97fb64b2-aa70-4166-93e1-c6decd332745")
     time.sleep(1)
     print("Launched login page")
@@ -60,7 +62,6 @@ try:
 
     # Members with Callings report
     driver.get("https://lcr.churchofjesuschrist.org/orgs/members-with-callings?lang=eng")
-    print("Got to report page")
     time.sleep(5)
 
     table = driver.find_element(By.XPATH, '//table[contains(@class, "table ng-scope")]')
@@ -107,7 +108,6 @@ try:
 
     # Primary report
     driver.get("https://lcr.churchofjesuschrist.org/orgs/643828?lang=eng")
-    print("Launched Primary callings page")
     time.sleep(2)
     driver.find_element(By.XPATH, '//a[@ng-click="selectAllOrgs()" and text()="All Organizations"]').click()
     time.sleep(2)
@@ -132,7 +132,6 @@ try:
 
     # Sunday School report
     driver.get("https://lcr.churchofjesuschrist.org/orgs/498982?lang=eng")
-    print("Launched Sunday School callings page")
     time.sleep(2)
     driver.find_element(By.XPATH, '//a[@ng-click="selectAllOrgs()" and text()="All Organizations"]').click()
     time.sleep(2)
