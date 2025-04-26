@@ -61,10 +61,9 @@ try:
     driver.find_element(By.XPATH, '//input[@value="Verify"]').click()
     print("Entered password and clicked 'Sign In'")
 
-    time.sleep(5)  # Give heavy dashboard time to load fully
-
-    # Members with Callings report
+    # 🚀 SKIP loading dashboard (go directly to Members with Callings report)
     driver.get("https://lcr.churchofjesuschrist.org/orgs/members-with-callings?lang=eng")
+    print("Navigated directly to Callings report page")
     time.sleep(5)
 
     table = driver.find_element(By.XPATH, '//table[contains(@class, "table ng-scope")]')
