@@ -1,0 +1,20 @@
+[phases.setup]
+nixPkgs = [
+  "chromium",
+  "chromedriver",
+  "nss",
+  "freetype",
+  "fontconfig",
+  "xorg.libX11",
+  "xorg.libXcomposite",
+  "xorg.libXcursor",
+  "xorg.libXdamage",
+  "xorg.libXext",
+  "xorg.libXfixes",
+  "xorg.libXi",
+  "xorg.libXrandr",
+  "xorg.libXrender",
+  "xorg.libXtst",
+  "alsa-lib",
+  "xorg.libxcb"
+]
