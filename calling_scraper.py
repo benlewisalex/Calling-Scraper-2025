@@ -1,7 +1,7 @@
 from selenium import webdriver
 from selenium.webdriver.common.by import By
-from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 import re
 import gspread
 from google.oauth2.service_account import Credentials
@@ -28,17 +28,21 @@ client = gspread.authorize(creds)
 sheet = client.open(spreadsheet_name).worksheet(tab_name)
 
 try:
-    # Setup WebDriver with hardcoded paths for Railway
+    # Setup Remote WebDriver (using a remote Selenium Grid)
+    remote_webdriver_url = os.getenv('REMOTE_SELENIUM_GRID_URL')  # Set this as an environment variable!
+
     chrome_options = Options()
-    chrome_options.binary_location = "/usr/bin/chromium"
     chrome_options.add_argument("--headless")
     chrome_options.add_argument("--no-sandbox")
     chrome_options.add_argument("--disable-dev-shm-usage")
     chrome_options.add_argument("--disable-gpu")
     chrome_options.add_argument("--window-size=1920x1080")
 
-    service = Service("/usr/bin/chromedriver")
-    driver = webdriver.Chrome(service=service, options=chrome_options)
+    driver = webdriver.Remote(
+        command_executor=f'{remote_webdriver_url}/wd/hub',
+        desired_capabilities=DesiredCapabilities.CHROME.copy(),
+        options=chrome_options
+    )
     driver.set_page_load_timeout(30)
 
     # Open the login page
