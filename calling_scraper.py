@@ -1,7 +1,7 @@
 from selenium import webdriver
 from selenium.webdriver.common.by import By
+from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
-import chromedriver_autoinstaller
 import re
 import gspread
 from google.oauth2.service_account import Credentials
@@ -28,19 +28,17 @@ client = gspread.authorize(creds)
 sheet = client.open(spreadsheet_name).worksheet(tab_name)
 
 try:
-    # Install matching chromedriver automatically
-    chromedriver_autoinstaller.install()
-
-    # Setup WebDriver (headless + Railway-safe)
+    # Setup WebDriver with hardcoded paths for Railway
     chrome_options = Options()
-    chrome_options.binary_location = "/usr/bin/chromium-browser"
+    chrome_options.binary_location = "/usr/bin/chromium"
     chrome_options.add_argument("--headless")
     chrome_options.add_argument("--no-sandbox")
     chrome_options.add_argument("--disable-dev-shm-usage")
     chrome_options.add_argument("--disable-gpu")
     chrome_options.add_argument("--window-size=1920x1080")
 
-    driver = webdriver.Chrome(options=chrome_options)
+    service = Service("/usr/bin/chromedriver")
+    driver = webdriver.Chrome(service=service, options=chrome_options)
     driver.set_page_load_timeout(30)
 
     # Open the login page
