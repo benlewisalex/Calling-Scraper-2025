@@ -1,0 +1,15 @@
+{
+  "build": {
+    "builder": "NIXPACKS",
+    "nixpacksConfig": {
+      "languages": {
+        "python": {
+          "version": "3.10"
+        }
+      }
+    }
+  },
+  "start": {
+    "cmd": "python calling_scraper.py"
+  }
+}
